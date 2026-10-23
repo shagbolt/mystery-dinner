@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Wonderland">
+<meta name="theme-color" content="#231B14">
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<title>Wicked Wonderland – Detective’s Casebook</title>
+<style>
+*,*::before,*::after{box-sizing:border-box}
+:root{
+  --paper:#ECE2CB;--card:#F6F0E1;--field:#FFFCF4;--ink:#231B14;--muted:#6E604C;--rule:#CDBD98;
+  --red:#9B1C2E;--green:#3E6A39;--amber:#9A6514;--violet:#5B4078;--onfill:#FFF8EC;
+  --serif:"Iowan Old Style","Palatino Linotype",Palatino,"Book Antiqua",Georgia,serif;
+  color-scheme:light;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --paper:#16120E;--card:#211B15;--field:#2A231B;--ink:#EEE4CF;--muted:#AC9C80;--rule:#46392A;
+    --red:#E06A78;--green:#86B67A;--amber:#DDA54E;--violet:#B79DD6;--onfill:#1A0F0C;color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --paper:#16120E;--card:#211B15;--field:#2A231B;--ink:#EEE4CF;--muted:#AC9C80;--rule:#46392A;
+  --red:#E06A78;--green:#86B67A;--amber:#DDA54E;--violet:#B79DD6;--onfill:#1A0F0C;color-scheme:dark;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--serif);font-size:17px;line-height:1.5;
+  padding-bottom:calc(78px + env(safe-area-inset-bottom,0px))}
+
+/* Masthead */
+.masthead{max-width:720px;margin:0 auto;padding:28px 18px 0;overflow:hidden;
+  background:radial-gradient(ellipse at 85% 0%,transparent 35%,rgba(90,60,25,.10) 100%)}
+.masthead h1{margin:0;font-weight:900;text-transform:uppercase;line-height:.84;letter-spacing:-.015em;
+  text-shadow:2px 2px 0 var(--paper),4px 4px 0 var(--ink)}
+.w1{display:block;font-size:clamp(3.1rem,17vw,5.6rem)}
+.w2{display:block;font-size:clamp(1.9rem,10.3vw,3.45rem);letter-spacing:.02em;margin-top:.14em}
+.under{display:flex;align-items:center;gap:14px;margin:16px 0 18px}
+.sub{flex:1;margin:0;font-style:italic;color:var(--muted);font-size:.98rem;line-height:1.4}
+.tag{flex:none;position:relative;transform:rotate(9deg);background:var(--card);color:var(--ink);
+  padding:6px 14px 6px 26px;font-style:italic;font-size:1.02rem;
+  clip-path:polygon(14px 0,100% 0,100% 100%,14px 100%,0 50%);
+  box-shadow:inset 0 0 0 1px var(--rule)}
+.tag::before{content:"";position:absolute;left:12px;top:50%;width:7px;height:7px;border-radius:50%;
+  background:var(--paper);box-shadow:inset 0 0 0 1px var(--rule);transform:translateY(-50%)}
+.checker{height:20px;margin:0 -18px;
+  background:repeating-conic-gradient(var(--ink) 0 25%,var(--paper) 0 50%) 0 0/20px 20px}
+
+/* Sections */
+.sec{max-width:720px;margin:0 auto;border-bottom:1px solid var(--rule)}
+.sec-head{all:unset;box-sizing:border-box;width:100%;display:flex;align-items:center;gap:14px;padding:18px;cursor:pointer}
+.sec-head:focus-visible,.card-head:focus-visible{outline:2px solid var(--violet);outline-offset:-4px}
+.chev{flex:none;width:0;height:0;border-left:8px solid currentColor;border-top:6px solid transparent;
+  border-bottom:6px solid transparent;transition:transform .2s}
+[aria-expanded="true"] > .chev{transform:rotate(90deg)}
+.sec-title{display:block;font-size:1.45rem;font-weight:700;line-height:1.2}
+.sec-sub{display:block;font-size:.92rem;color:var(--muted);font-style:italic}
+.sec-body{padding:0 18px 26px}
+.block{margin-bottom:8px}
+.block h3{font-size:1.12rem;margin:20px 0 10px;padding-top:12px;border-top:1px solid var(--rule);display:flex;align-items:center;gap:8px}
+.block:first-child h3{border-top:0;padding-top:0;margin-top:4px}
+.count{font-size:.78rem;font-weight:400;border:1px solid var(--rule);border-radius:999px;padding:0 8px;color:var(--muted)}
+h4{font-size:1rem;margin:4px 0 6px}
+
+/* Fields */
+.field{display:block;margin:0 0 12px}
+.field > span{display:block;font-size:.88rem;color:var(--muted);margin-bottom:4px}
+input,select,textarea{font:inherit;font-size:16px;color:var(--ink);background-color:var(--field);border:1px solid var(--rule);
+  border-radius:6px;padding:10px 11px;width:100%;margin:0}
+textarea{resize:vertical;min-height:2.9em;line-height:1.4;field-sizing:content}
+select{-webkit-appearance:none;appearance:none;padding-right:34px;
+  background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);
+  background-position:calc(100% - 19px) 55%,calc(100% - 14px) 55%;background-size:5px 5px;background-repeat:no-repeat}
+input:focus-visible,select:focus-visible,textarea:focus-visible,button:focus-visible{outline:2px solid var(--violet);outline-offset:1px}
+::placeholder{color:var(--muted);opacity:.75}
+.picker .other{margin-top:6px}
+.hide{display:none}
+.check{display:flex;gap:10px;align-items:flex-start;margin:2px 0 14px;font-size:.98rem;cursor:pointer}
+.check input{width:22px;height:22px;flex:none;accent-color:var(--red);margin:1px 0 0;padding:0}
+.two{display:grid;grid-template-columns:1fr;gap:0 12px}
+@media (min-width:560px){.two{grid-template-columns:1fr 1fr}}
+
+/* Buttons */
+.btn{font:inherit;font-size:.98rem;padding:9px 16px;border:1.5px solid var(--ink);border-radius:999px;background:transparent;color:var(--ink);cursor:pointer}
+.btn.primary{background:var(--red);border-color:var(--red);color:var(--onfill)}
+.btn.small{font-size:.9rem;padding:6px 13px}
+.link{font:inherit;font-size:.92rem;background:none;border:0;color:var(--violet);text-decoration:underline;text-underline-offset:3px;padding:6px 2px;cursor:pointer}
+.link.danger{color:var(--red)}
+.btn-row{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin-top:8px}
+
+.row-person{padding:10px 0;border-bottom:1px dotted var(--rule)}
+.row-actions{display:flex;gap:18px;justify-content:flex-end}
+
+/* Interview cards */
+.card{background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--rule);border-radius:4px;margin:0 0 12px}
+.card.cred-truthful{border-left-color:var(--green)}
+.card.cred-unsure{border-left-color:var(--amber)}
+.card.cred-lying{border-left-color:var(--red)}
+.card-head{all:unset;box-sizing:border-box;display:flex;gap:12px;align-items:center;width:100%;padding:12px 14px;cursor:pointer}
+.card-head .chev{margin-left:auto}
+.card-id{min-width:0}
+.card-name{font-weight:700;font-size:1.1rem;line-height:1.25}
+.card-meta{display:block;font-size:.85rem;color:var(--muted)}
+.tick{width:24px;height:24px;border:1.5px solid var(--rule);border-radius:50%;display:grid;place-items:center;font-size:.8rem;flex:none}
+.tick.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.chip{font-size:.75rem;padding:1px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap;margin-left:6px;vertical-align:2px}
+.chip.suspect{color:var(--red)}
+.chip.witness{color:var(--muted)}
+.chip.truthful{color:var(--green)}
+.chip.unsure{color:var(--amber)}
+.chip.lying{color:var(--red)}
+.card-body{padding:2px 14px 16px}
+.seg{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 14px}
+.seg-b,.mom-b{font:inherit;font-size:.9rem;padding:7px 12px;border-radius:999px;border:1.5px solid var(--rule);background:var(--field);color:var(--ink);cursor:pointer}
+.seg-b.on.truthful{background:var(--green);border-color:var(--green);color:var(--onfill)}
+.seg-b.on.unsure{background:var(--amber);border-color:var(--amber);color:var(--onfill)}
+.seg-b.on.lying{background:var(--red);border-color:var(--red);color:var(--onfill)}
+.qs{padding-left:1.4em;margin:0 0 6px}
+.qs li{margin-bottom:14px}
+.q{margin:0 0 5px;font-style:italic}
+.extra input{margin-bottom:6px;font-style:italic}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0 16px}
+.chips-label{width:100%;font-size:.88rem;color:var(--muted)}
+.chip-btn{font:inherit;font-size:.88rem;text-align:left;padding:6px 11px;border-radius:12px;border:1px dashed var(--violet);background:transparent;color:var(--violet);cursor:pointer}
+.sub-block{border-top:1px solid var(--rule);padding-top:12px;margin-top:12px}
+.stmt{border-left:3px solid var(--muted);padding:8px 0 2px 12px;margin:10px 0}
+.stmt.st-supports{border-left-color:var(--green)}
+.stmt.st-contradicts{border-left-color:var(--red)}
+.empty{color:var(--muted);font-style:italic;font-size:.94rem;margin:4px 0 10px}
+.toolbar{display:flex;justify-content:space-between;align-items:center;margin:0 0 12px;flex-wrap:wrap;gap:8px}
+
+/* Solve board */
+.summary{display:grid;grid-template-columns:auto 1fr;gap:4px 14px;margin:0 0 6px;background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:12px 14px}
+.summary dt{color:var(--muted);font-size:.9rem}
+.summary dd{margin:0}
+.hint{font-size:.9rem;color:var(--muted);font-style:italic;margin:4px 0 12px}
+.suspect{background:var(--card);border:1px solid var(--rule);border-radius:4px;padding:12px 14px;margin-bottom:12px}
+.suspect.cleared{opacity:.55}
+.s-top{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}
+.rank{font-weight:900;font-size:1.45rem;min-width:1.2em}
+.s-name{all:unset;font-weight:700;font-size:1.12rem;text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:3px;cursor:pointer}
+.meter{height:6px;background:var(--rule);border-radius:3px;margin:8px 0 12px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--red)}
+.mom{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
+.mom-b.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.sus{display:flex;align-items:center;gap:7px;margin-bottom:8px;font-size:.9rem;color:var(--muted);flex-wrap:wrap}
+.pip{width:30px;height:30px;border-radius:50%;border:1.5px solid var(--red);background:transparent;padding:0;cursor:pointer}
+.pip.on{background:var(--red)}
+.sus .link{margin-left:auto}
+.claims{margin:6px 0}
+.claims dt{font-size:.84rem;color:var(--muted)}
+.claims dd{margin:0 0 6px}
+.flags{list-style:none;padding:0;margin:8px 0}
+.flags li{font-size:.93rem;padding-left:20px;position:relative;margin-bottom:3px}
+.flags li::before{position:absolute;left:0;top:0;font-weight:700}
+.flags .bad::before{content:"✗";color:var(--red)}
+.flags .good::before{content:"✓";color:var(--green)}
+.flags .note::before{content:"?";color:var(--amber)}
+.said{list-style:none;padding:0;margin:6px 0 0}
+.said li{font-size:.93rem;border-left:3px solid var(--muted);padding:2px 0 2px 10px;margin-bottom:5px}
+.said li.st-supports{border-left-color:var(--green)}
+.said li.st-contradicts{border-left-color:var(--red)}
+.map svg{width:100%;max-width:440px;display:block;margin:0 auto}
+.map text{fill:var(--ink);font-family:var(--serif);font-size:11px}
+.map .init{font-size:12px;font-weight:700}
+.e{fill:none;stroke-width:2}
+.e-supports{stroke:var(--green)} .e-contradicts{stroke:var(--red)} .e-info{stroke:var(--muted)}
+.mk-supports{fill:var(--green)} .mk-contradicts{fill:var(--red)} .mk-info{fill:var(--muted)}
+.rel{stroke:var(--rule);stroke-width:1.5;stroke-dasharray:3 4}
+.n-victim{fill:var(--ink)} .n-victim-t{fill:var(--paper)!important}
+.n-suspect{fill:var(--card);stroke:var(--red);stroke-width:2}
+.n-witness{fill:var(--card);stroke:var(--muted);stroke-width:1.5}
+.n-cleared{opacity:.4}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;justify-content:center;font-size:.85rem;color:var(--muted);margin:6px 0 4px}
+.legend i{display:inline-block;width:18px;height:3px;vertical-align:middle;margin-right:5px}
+.accuse{border:2px solid var(--red);border-radius:4px;padding:4px 14px 14px;margin-top:22px}
+.accuse h3{border-top:0;padding-top:0;color:var(--red)}
+
+/* Notebook */
+.entry{border-bottom:1px dotted var(--rule);padding:10px 0}
+.entry-foot{display:flex;gap:10px;align-items:flex-end;margin-top:6px}
+.entry-foot .field{flex:1;margin:0}
+.time-row{display:grid;grid-template-columns:7.5em 1fr;gap:8px}
+
+/* Bottom nav */
+.jump{position:fixed;left:0;right:0;bottom:0;z-index:20;background:var(--ink);display:flex;justify-content:center;
+  padding-bottom:env(safe-area-inset-bottom,0px)}
+.jump button{all:unset;flex:1;max-width:180px;text-align:center;padding:14px 4px;color:var(--paper);font-size:.98rem;cursor:pointer}
+.jump button:focus-visible{outline:2px solid var(--paper);outline-offset:-4px}
+#toast{position:fixed;left:50%;bottom:calc(70px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);
+  background:var(--ink);color:var(--paper);padding:8px 16px;border-radius:999px;font-size:.95rem;opacity:0;pointer-events:none;transition:opacity .2s;z-index:30;white-space:nowrap}
+#toast.show{opacity:1}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="masthead">
+  <h1><span class="w1">Wicked</span><span class="w2">Wonderland</span></h1>
+  <div class="under">
+    <p class="sub">Mystery Night at the Roanoke County Public Library. A casebook for questioning the suspects in Detective Klutz’ custody.</p>
+    <div class="tag" aria-hidden="true">solve me</div>
+  </div>
+  <div class="checker" aria-hidden="true"></div>
+</header>
+<main id="app"></main>
+<nav class="jump" aria-label="Jump to section">
+  <button data-jump="case">Case</button>
+  <button data-jump="interviews">Interviews</button>
+  <button data-jump="solve">Solve</button>
+  <button data-jump="notebook">Notebook</button>
+</nav>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+const KEY = "wicked-wonderland-casebook-v1";
+
+const CAST = {
+  "Alice’s Adventures in Wonderland": ["Alice","White Rabbit","Mouse","Dodo","Lory","Eaglet","Duck","Bill the Lizard","Pat","Caterpillar","Pigeon","Fish-Footman","Frog-Footman","Duchess","Cook","Baby (the pig)","Cheshire Cat","Mad Hatter","March Hare","Dormouse","Two of Spades","Five of Spades","Seven of Spades","Queen of Hearts","King of Hearts","Knave of Hearts","Executioner","Gryphon","Mock Turtle","Alice’s Sister","Dinah the Cat"],
+  "Through the Looking-Glass": ["Red Queen","White Queen","Red King","White King","Red Knight","White Knight","Tweedledum","Tweedledee","Humpty Dumpty","Walrus","Carpenter","Jabberwock","Lion","Unicorn","Haigha","Hatta","Sheep","Gnat","Tiger-lily"],
+  "Tonight’s event": ["Detective Klutz"]
+};
+Object.keys(CAST).forEach(k => CAST[k].sort((a,b) => a.localeCompare(b)));
+
+const PLACES = {
+  "Wonderland": ["Rabbit hole","Hall of doors","Pool of tears","Caucus-race shore","White Rabbit’s house","Caterpillar’s mushroom","Duchess’s kitchen","Cheshire Cat’s tree","Mad Tea Party table","Queen’s croquet ground","Rose garden","Royal courtroom","Mock Turtle’s seashore"],
+  "Looking-glass world": ["Looking-glass house","Garden of live flowers","Tulgey Wood","Wood where things have no names","Humpty Dumpty’s wall","Sheep’s shop"]
+};
+const WEAPONS = {
+  "From the story": ["Poisoned tarts","“Drink Me” bottle","“Eat Me” cake","Flamingo croquet mallet","Hedgehog croquet ball","Teapot","Butter knife","Hatter’s pocket watch","Pepper","Cook’s frying pan","Executioner’s axe","Hookah","Red paint (for the roses)","Playing card","Vorpal sword","Hatpin"]
+};
+const LISTS = {cast:CAST, place:PLACES, weapon:WEAPONS};
+
+const CRED = [["truthful","Truthful"],["unsure","Possibly untrustworthy"],["lying","Suspected of lying"]];
+const STANCE = [["info","Just information"],["supports","Backs up their story"],["contradicts","Contradicts their story"]];
+const NAMESTOP = new Set(["queen","king","knight","white","hearts","spades","sister","footman","the","dinah"]);
+
+const uid = () => Math.random().toString(36).slice(2,9);
+const blank = () => ({
+  v:1,
+  victim:{name:"",about:""},
+  scene:{location:"",moved:false,foundAt:"",weapon:"",misid:false,actualWeapon:"",time:"",notes:""},
+  people:[], statements:[], clues:[], timeline:[],
+  accuse:{who:"",why:""},
+  open:{case:true,interviews:true,solve:true,notebook:true}
+});
+const newPerson = role => ({id:uid(),name:"",role,station:"",job:"",where:"",alibi:"",rel:"",cred:"",answers:{},extra:[],notes:"",done:false,motive:false,opp:false,means:false,sus:0,cleared:false,open:true});
+
+function load(){
+  let s = null;
+  try { s = JSON.parse(localStorage.getItem(KEY)); } catch(e) {}
+  const b = blank();
+  if (!s || typeof s !== "object") return b;
+  const out = Object.assign(b, s);
+  out.victim = Object.assign(blank().victim, s.victim || {});
+  out.scene = Object.assign(blank().scene, s.scene || {});
+  out.accuse = Object.assign(blank().accuse, s.accuse || {});
+  out.open = Object.assign(blank().open, s.open || {});
+  out.people = (s.people || []).map(p => Object.assign(newPerson(p.role || "witness"), p));
+  ["statements","clues","timeline"].forEach(k => { if (!Array.isArray(out[k])) out[k] = []; });
+  return out;
+}
+let state = load();
+let saveT;
+function save(){ clearTimeout(saveT); saveT = setTimeout(saveNow, 250); }
+function saveNow(){ try { localStorage.setItem(KEY, JSON.stringify(state)); } catch(e) {} }
+window.addEventListener("pagehide", saveNow);
+document.addEventListener("visibilitychange", () => { if (document.hidden) saveNow(); });
+
+const esc = s => String(s == null ? "" : s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+function resolve(path){
+  const parts = path.split(".");
+  let o = state;
+  for (let i = 0; i < parts.length - 1; i++){
+    const k = parts[i];
+    o = Array.isArray(o) ? o.find(x => x.id === k) : o[k];
+    if (o == null) return [null, null];
+  }
+  return [o, parts[parts.length - 1]];
+}
+const getPath = p => { const [o,k] = resolve(p); return o ? o[k] : undefined; };
+const setPath = (p,v) => { const [o,k] = resolve(p); if (o) o[k] = v; };
+
+const person = id => state.people.find(p => p.id === id);
+const nameOf = p => !p ? "Someone" : (p.name.trim() || (p.role === "suspect" ? "Unnamed suspect" : "Unnamed witness"));
+const vic = () => state.victim.name.trim() || "the victim";
+const scenePlace = () => state.scene.location.trim();
+const weaponName = () => (state.scene.misid && state.scene.actualWeapon.trim()) || state.scene.weapon.trim();
+const credLabel = k => (CRED.find(c => c[0] === k) || [,"Not judged yet"])[1];
+
+function questions(){
+  const v = vic();
+  return [
+    "Where were you when the murder happened, and who saw you there?",
+    `When did you last see ${v}, and how did they seem?`,
+    `How did you know ${v}? Any quarrels, debts or secrets between you?`,
+    "Did you see or hear anything odd near the scene: a quarrel, a stranger, the weapon?",
+    "Who do you think did it, and why?"
+  ];
+}
+function followUps(){
+  const w = weaponName(), l = scenePlace(), v = vic();
+  return [
+    "Who can confirm your story?",
+    w ? `Have you ever handled the ${w}?` : "Did you have anything that could be used as a weapon?",
+    l ? `When were you last at the ${l}?` : "When were you last at the scene?",
+    `Who else had a reason to want ${v} gone?`,
+    "Is anyone asking you to keep a secret?",
+    "Did you see anyone clean up, change clothes or leave in a hurry?",
+    "What time was it, exactly? How do you know?"
+  ];
+}
+
+/* ---------- building blocks ---------- */
+const otherOpen = new Set();
+const flat = list => Object.values(list).flat();
+function picker(path, kind, placeholder){
+  const list = LISTS[kind];
+  const val = getPath(path) || "";
+  const inList = flat(list).includes(val);
+  const other = (val && !inList) || otherOpen.has(path);
+  let opts = `<option value="">${esc(placeholder)}</option>`;
+  for (const [g, items] of Object.entries(list)){
+    opts += `<optgroup label="${esc(g)}">` + items.map(n => `<option value="${esc(n)}"${!other && n === val ? " selected" : ""}>${esc(n)}</option>`).join("") + `</optgroup>`;
+  }
+  const otherLabel = kind === "cast" ? "Someone not on this list…" : kind === "place" ? "Somewhere not on this list…" : "Something not on this list…";
+  opts += `<option value="__other"${other ? " selected" : ""}>${otherLabel}</option>`;
+  const ph = kind === "cast" ? "Type their name" : kind === "place" ? "Type the place" : "Type the weapon";
+  return `<div class="picker"><select data-pick="${path}" aria-label="${esc(placeholder)}">${opts}</select>` +
+    `<input class="other${other ? "" : " hide"}" data-path="${path}" value="${other ? esc(val) : ""}" placeholder="${ph}" autocomplete="off" aria-label="${ph}"></div>`;
+}
+const pickerField = (label, path, kind, ph) => `<div class="field"><span>${label}</span>${picker(path, kind, ph)}</div>`;
+function field(label, path, o = {}){
+  const v = esc(getPath(path) || "");
+  const ctl = o.area
+    ? `<textarea data-path="${path}" placeholder="${esc(o.ph || "")}" rows="2">${v}</textarea>`
+    : `<input type="text" data-path="${path}" value="${v}" placeholder="${esc(o.ph || "")}" autocomplete="off">`;
+  return `<label class="field"><span>${label}</span>${ctl}</label>`;
+}
+const check = (label, path) => `<label class="check"><input type="checkbox" data-path="${path}"${getPath(path) ? " checked" : ""}><span>${label}</span></label>`;
+function personOptions(v, exclude, ph){
+  return `<option value="">${esc(ph)}</option>` + state.people.filter(p => p.id !== exclude)
+    .map(p => `<option value="${p.id}"${p.id === v ? " selected" : ""}>${esc(nameOf(p))}</option>`).join("");
+}
+const personSelect = (path, exclude, ph) => `<select class="person-select" data-path="${path}" data-exclude="${exclude || ""}" data-ph="${esc(ph)}">${personOptions(getPath(path) || "", exclude, ph)}</select>`;
+
+function section(key, title, sub, body){
+  const open = !!state.open[key];
+  return `<section class="sec" id="sec-${key}"><button class="sec-head" data-toggle="${key}" aria-expanded="${open}">` +
+    `<span class="chev" aria-hidden="true"></span><span><span class="sec-title">${title}</span><span class="sec-sub">${sub}</span></span></button>` +
+    `<div class="sec-body"${open ? "" : " hidden"}>${body}</div></section>`;
+}
+
+/* ---------- Section 1: The case ---------- */
+function renderCase(){
+  const s = state.scene;
+  const sus = state.people.filter(p => p.role === "suspect");
+  const wit = state.people.filter(p => p.role === "witness");
+  const rows = list => list.map(p => `<div class="row-person">${picker(`people.${p.id}.name`, "cast", p.role === "suspect" ? "Choose a suspect" : "Choose a witness")}` +
+    `<div class="row-actions"><button class="link" data-act="swap" data-id="${p.id}">${p.role === "suspect" ? "Move to witnesses" : "Move to suspects"}</button>` +
+    `<button class="link danger" data-act="remove" data-id="${p.id}">Remove</button></div></div>`).join("");
+  const body =
+    `<div class="block"><h3>The victim</h3>${pickerField("Who was murdered", "victim.name", "cast", "Choose the victim")}` +
+    field("What we were told about them", "victim.about", {area:true, ph:"Title, enemies, secrets, last seen…"}) + `</div>` +
+    `<div class="block"><h3>The scene</h3>${pickerField("Where the murder happened", "scene.location", "place", "Choose a place")}` +
+    check("The body was moved or found somewhere else", "scene.moved") +
+    (s.moved ? pickerField("Where the body was found", "scene.foundAt", "place", "Choose a place") : "") +
+    pickerField("Murder weapon", "scene.weapon", "weapon", "Choose a weapon") +
+    check("The weapon may have been misidentified", "scene.misid") +
+    (s.misid ? pickerField("What the real weapon was", "scene.actualWeapon", "weapon", "Choose a weapon") : "") +
+    field("Time of death or discovery", "scene.time", {ph:"e.g. just after six o’clock"}) +
+    field("Other scene details", "scene.notes", {area:true, ph:"Footprints, spilled tea, a missing tart…"}) + `</div>` +
+    `<div class="block"><h3>Suspects <span class="count">${sus.length}</span></h3>${rows(sus) || `<p class="empty">No suspects yet. Add each one as they are introduced.</p>`}` +
+    `<div class="btn-row"><button class="btn small" data-act="add" data-role="suspect">Add a suspect</button></div></div>` +
+    `<div class="block"><h3>Witnesses <span class="count">${wit.length}</span></h3>${rows(wit) || `<p class="empty">No witnesses yet. Add the people you will question around the library.</p>`}` +
+    `<div class="btn-row"><button class="btn small" data-act="add" data-role="witness">Add a witness</button></div></div>`;
+  const sub = state.victim.name.trim() ? `The murder of ${esc(state.victim.name.trim())}` : "Victim, scene, suspects and witnesses";
+  return section("case", "The case", sub, body);
+}
+
+/* ---------- Section 2: Interviews ---------- */
+function stEditor(s, mode, pid){
+  const who = mode === "about"
+    ? `<label class="field"><span>Who said it</span>${personSelect(`statements.${s.id}.from`, pid, "Choose who said it")}</label>`
+    : `<label class="field"><span>Who they talked about</span>${personSelect(`statements.${s.id}.about`, pid, "Choose who")}</label>`;
+  const stance = `<label class="field"><span>Does it fit that person’s story?</span><select data-path="statements.${s.id}.stance">` +
+    STANCE.map(([k,l]) => `<option value="${k}"${s.stance === k ? " selected" : ""}>${l}</option>`).join("") + `</select></label>`;
+  return `<div class="stmt st-${s.stance}"><div class="two">${who}${stance}</div>` +
+    `<label class="field"><span>What was said</span><textarea data-path="statements.${s.id}.text" rows="2" placeholder="Their words, as close as you can">${esc(s.text)}</textarea></label>` +
+    `<button class="link danger" data-act="delst" data-sid="${s.id}">Remove this</button></div>`;
+}
+function card(p){
+  const id = p.id, nm = esc(nameOf(p));
+  const about = state.statements.filter(s => s.about === id);
+  const by = state.statements.filter(s => s.from === id);
+  const meta = [p.station.trim() ? esc(p.station.trim()) : "", p.cred ? credLabel(p.cred) : ""].filter(Boolean).join(". ");
+  const qs = questions().map((q,i) => `<li><p class="q">${esc(q)}</p><textarea data-path="people.${id}.answers.q${i}" rows="2" placeholder="Their answer">${esc(p.answers["q"+i] || "")}</textarea></li>`).join("") +
+    p.extra.map(x => `<li class="extra"><input type="text" data-path="people.${id}.extra.${x.id}.q" value="${esc(x.q)}" placeholder="Your question" autocomplete="off">` +
+      `<textarea data-path="people.${id}.extra.${x.id}.a" rows="2" placeholder="Their answer">${esc(x.a)}</textarea>` +
+      `<button class="link danger" data-act="delq" data-id="${id}" data-x="${x.id}">Remove question</button></li>`).join("");
+  const chips = `<div class="chips"><span class="chips-label">Tap to add a follow-up question:</span>` +
+    followUps().map(q => `<button class="chip-btn" data-act="addq" data-id="${id}" data-q="${esc(q)}">${esc(q)}</button>`).join("") +
+    `<button class="chip-btn" data-act="addq" data-id="${id}" data-q="">Write my own</button></div>`;
+  const body =
+    pickerField("Name", `people.${id}.name`, "cast", p.role === "suspect" ? "Choose a suspect" : "Choose a witness") +
+    `<div class="two">${field("Where in the library", `people.${id}.station`, {ph:"e.g. Children’s room"})}${field("What they do", `people.${id}.job`, {ph:"Their role or trade"})}</div>` +
+    check("I have questioned them", `people.${id}.done`) +
+    field("Where they were the night of the murder", `people.${id}.where`, {area:true}) +
+    field("Alibi: who or what backs up their story", `people.${id}.alibi`, {area:true}) +
+    field(`Relationship to ${esc(vic())}`, `people.${id}.rel`, {area:true}) +
+    `<div class="field"><span>How believable are they?</span><div class="seg" role="group" aria-label="Credibility">` +
+    CRED.map(([k,l]) => `<button class="seg-b${p.cred === k ? " on " + k : ""}" data-set="people.${id}.cred" data-val="${k}" aria-pressed="${p.cred === k}">${l}</button>`).join("") + `</div></div>` +
+    `<h4>Questions to ask</h4><ol class="qs">${qs}</ol>${chips}` +
+    `<div class="sub-block"><h4>What others said about <span data-name-of="${id}">${nm}</span></h4>` +
+    (about.map(s => stEditor(s, "about", id)).join("") || `<p class="empty">Nothing yet. When someone else mentions them, record it here.</p>`) +
+    `<button class="btn small" data-act="addst" data-id="${id}" data-mode="about">Add what someone said</button></div>` +
+    `<div class="sub-block"><h4>What <span data-name-of="${id}">${nm}</span> said about others</h4>` +
+    (by.map(s => stEditor(s, "from", id)).join("") || `<p class="empty">Nothing yet. If they name another character, record it here and it will appear on that person’s card too.</p>`) +
+    `<button class="btn small" data-act="addst" data-id="${id}" data-mode="from">Add someone they mentioned</button></div>` +
+    `<div class="sub-block">${field("Other notes", `people.${id}.notes`, {area:true, ph:"Nervous habits, odd details, what they avoided saying"})}` +
+    `<button class="link danger" data-act="remove" data-id="${id}">Remove <span data-name-of="${id}">${nm}</span> from the case</button></div>`;
+  return `<article class="card${p.cred ? " cred-" + p.cred : ""}" id="card-${id}">` +
+    `<button class="card-head" data-card="${id}" aria-expanded="${p.open}"><span class="tick${p.done ? " on" : ""}" aria-label="${p.done ? "Questioned" : "Not questioned yet"}">${p.done ? "✓" : ""}</span>` +
+    `<span class="card-id"><span class="card-name" data-name-of="${id}">${nm}</span><span class="chip ${p.role}">${p.role === "suspect" ? "Suspect" : "Witness"}</span>` +
+    `<span class="card-meta">${meta || "Tap to open"}</span></span><span class="chev" aria-hidden="true"></span></button>` +
+    `<div class="card-body"${p.open ? "" : " hidden"}>${body}</div></article>`;
+}
+function renderInterviews(){
+  const n = state.people.length, done = state.people.filter(p => p.done).length;
+  const body = (n ? `<div class="toolbar"><span class="hint" style="margin:0">Green, amber and red edges show how believable each person is.</span>` +
+      `<span><button class="link" data-act="expandall">Open all</button> <button class="link" data-act="collapseall">Close all</button></span></div>` : "") +
+    (state.people.map(card).join("") || `<p class="empty">Add suspects and witnesses in The case, or add someone here as you meet them.</p>`) +
+    `<div class="btn-row"><button class="btn small" data-act="add" data-role="witness" data-here="1">Add someone to question</button></div>`;
+  return section("interviews", "Interviews", n ? `${done} of ${n} questioned` : "Question each witness around the library", body);
+}
+
+/* ---------- Section 3: Solve ---------- */
+function renderSolve(){
+  const body = `<div id="board"></div>` +
+    `<div class="accuse block"><h3>Your accusation</h3><label class="field"><span>The murderer is</span>${personSelect("accuse.who", "", "Choose the culprit")}</label>` +
+    field("How and why they did it", "accuse.why", {area:true, ph:"Motive, how they got the chance, the clue that proves it"}) +
+    `<div id="accuse-check"></div></div>` +
+    `<div class="btn-row" style="margin-top:18px"><button class="btn primary" data-act="copy">Copy my case notes</button>` +
+    `<button class="link danger" data-act="reset">Start a new case</button></div>`;
+  return section("solve", "Solve the case", "Everything linked together", body);
+}
+function personText(p){
+  return [p.where, p.alibi, p.rel, p.notes, ...Object.values(p.answers), ...p.extra.map(x => x.a)].join(" ").toLowerCase();
+}
+function mentions(text, phrase){
+  if (!phrase) return false;
+  const ph = phrase.toLowerCase().replace(/[“”"()]/g, "");
+  if (text.includes(ph)) return true;
+  return ph.split(/[^a-z’'-]+/).filter(w => w.length >= 5).some(w => text.includes(w.replace(/[’']s$/, "")));
+}
+const reEsc = s => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+function nameHit(text, name){
+  const n = name.toLowerCase();
+  if (text.includes(n)) return true;
+  return n.split(/[\s()\-]+/).filter(w => w.length >= 4 && !NAMESTOP.has(w)).some(w => new RegExp("\\b" + reEsc(w) + "\\b").test(text));
+}
+function analyze(p){
+  const about = state.statements.filter(s => s.about === p.id && (s.text.trim() || s.from));
+  const contra = about.filter(s => s.stance === "contradicts").length;
+  const supp = about.filter(s => s.stance === "supports").length;
+  const clues = state.clues.filter(c => c.who === p.id && c.text.trim()).length;
+  const mom = (+p.motive) + (+p.opp) + (+p.means);
+  const credPts = {lying:3, unsure:1.5, truthful:-1}[p.cred] || 0;
+  const alibiText = (p.alibi + " " + p.where).toLowerCase();
+  const alibis = state.people.filter(q => q.id !== p.id && q.name.trim() && nameHit(alibiText, q.name)).map(q => {
+    const st = state.statements.filter(s => s.from === q.id && s.about === p.id);
+    return {q, status: st.some(s => s.stance === "contradicts") ? "contradicted" : st.some(s => s.stance === "supports") ? "confirmed" : "unchecked"};
+  });
+  const alibiBroken = alibis.some(a => a.status === "contradicted");
+  const txt = personText(p);
+  const atScene = (scenePlace() && mentions(txt, scenePlace())) || (state.scene.moved && state.scene.foundAt.trim() && mentions(txt, state.scene.foundAt.trim()));
+  const nearWeapon = weaponName() && mentions(txt, weaponName());
+  let score = mom * 2 + p.sus + credPts + contra * 1.5 - supp * 0.75 + clues + (alibiBroken ? 2 : 0) + (atScene ? 0.5 : 0) + (nearWeapon ? 0.5 : 0);
+  if (p.cleared) score = -99;
+  return {p, about, contra, supp, clues, mom, alibis, alibiBroken, atScene, nearWeapon, score};
+}
+function mapSVG(){
+  const ppl = state.people;
+  if (!ppl.length) return `<p class="empty">Add suspects and witnesses to see who links to whom.</p>`;
+  const C = 180, R = 126, pos = {victim:{x:C, y:C}};
+  ppl.forEach((p,i) => { const a = -Math.PI/2 + i * 2 * Math.PI / ppl.length; pos[p.id] = {x:C + R*Math.cos(a), y:C + R*Math.sin(a)}; });
+  let edges = "";
+  ppl.forEach(p => { if (p.rel.trim()) edges += `<line class="rel" x1="${C}" y1="${C}" x2="${pos[p.id].x.toFixed(1)}" y2="${pos[p.id].y.toFixed(1)}"/>`; });
+  state.statements.forEach(s => {
+    const a = pos[s.from], b = pos[s.about];
+    if (!a || !b || s.from === s.about) return;
+    const dx = b.x - a.x, dy = b.y - a.y, L = Math.hypot(dx, dy) || 1, ux = dx/L, uy = dy/L;
+    const x1 = a.x + ux*21, y1 = a.y + uy*21, x2 = b.x - ux*25, y2 = b.y - uy*25;
+    const mx = (x1+x2)/2 - uy*16, my = (y1+y2)/2 + ux*16;
+    edges += `<path class="e e-${s.stance}" d="M${x1.toFixed(1)} ${y1.toFixed(1)} Q${mx.toFixed(1)} ${my.toFixed(1)} ${x2.toFixed(1)} ${y2.toFixed(1)}" marker-end="url(#mk-${s.stance})"/>`;
+  });
+  const initials = n => n.replace(/\(.*?\)/g, "").split(/\s+/).filter(w => w && !/^(the|of)$/i.test(w)).slice(0,2).map(w => w[0].toUpperCase()).join("") || "?";
+  const short = n => n.length > 15 ? n.slice(0,14) + "…" : n;
+  let nodes = `<circle class="n-victim" cx="${C}" cy="${C}" r="23"/><text class="init n-victim-t" x="${C}" y="${C+4}" text-anchor="middle">✝</text>` +
+    `<text x="${C}" y="${C+38}" text-anchor="middle">${esc(short(state.victim.name.trim() || "Victim"))}</text>`;
+  ppl.forEach(p => {
+    const {x, y} = pos[p.id], nm = nameOf(p);
+    nodes += `<g class="${p.cleared ? "n-cleared" : ""}"><circle class="n-${p.role}" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="19"/>` +
+      `<text class="init" x="${x.toFixed(1)}" y="${(y+4).toFixed(1)}" text-anchor="middle">${esc(initials(nm))}</text>` +
+      `<text x="${x.toFixed(1)}" y="${(y+33).toFixed(1)}" text-anchor="middle">${esc(short(nm))}</text></g>`;
+  });
+  const defs = STANCE.map(([k]) => `<marker id="mk-${k}" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path class="mk-${k}" d="M0 0L10 5L0 10z"/></marker>`).join("");
+  return `<svg viewBox="0 0 360 372" role="img" aria-label="Map of who said what about whom"><defs>${defs}</defs>${edges}${nodes}</svg>` +
+    `<div class="legend"><span><i style="background:var(--green)"></i>Backs up</span><span><i style="background:var(--red)"></i>Contradicts</span>` +
+    `<span><i style="background:var(--muted)"></i>Mentioned</span><span><i style="border-top:2px dashed var(--rule)"></i>Tied to victim</span></div>`;
+}
+function renderBoard(){
+  const el = document.getElementById("board");
+  if (!el) return;
+  const s = state.scene;
+  const rows = [["Victim", state.victim.name.trim() || "Not named yet"], ["Killed at", scenePlace() || "Unknown"]];
+  if (s.moved) rows.push(["Body found at", s.foundAt.trim() || "Unknown"]);
+  rows.push(["Weapon", s.weapon.trim() || "Unknown"]);
+  if (s.misid) rows.push(["Real weapon", s.actualWeapon.trim() || "Still to work out"]);
+  if (s.time.trim()) rows.push(["Time", s.time.trim()]);
+  const summary = `<dl class="summary">${rows.map(([a,b]) => `<dt>${a}</dt><dd>${esc(b)}</dd>`).join("")}</dl>`;
+
+  const list = state.people.map(analyze).sort((a,b) => b.score - a.score);
+  const top = Math.max(14, ...list.map(x => x.score));
+  const cards = list.map((r,i) => {
+    const p = r.p, flags = [];
+    if (p.cred === "lying") flags.push(["bad","You suspect they are lying"]);
+    if (p.cred === "unsure") flags.push(["note","Possibly untrustworthy"]);
+    if (r.contra) flags.push(["bad", `${r.contra} ${r.contra === 1 ? "statement contradicts" : "statements contradict"} their story`]);
+    if (r.supp) flags.push(["good", `${r.supp} ${r.supp === 1 ? "statement backs" : "statements back"} up their story`]);
+    r.alibis.forEach(a => {
+      const qn = esc(nameOf(a.q));
+      if (a.status === "confirmed") flags.push(["good", `Alibi names ${qn}, who backs it up`]);
+      else if (a.status === "contradicted") flags.push(["bad", `Alibi names ${qn}, who contradicts it`]);
+      else flags.push(["note", `Alibi names ${qn}. Ask ${qn} to confirm it`]);
+    });
+    if (p.done && !p.alibi.trim()) flags.push(["bad","No alibi recorded"]);
+    if (r.atScene) flags.push(["note","Their answers mention the scene"]);
+    if (r.nearWeapon) flags.push(["note","Their answers mention the weapon"]);
+    if (r.clues) flags.push(["bad", `${r.clues} ${r.clues === 1 ? "clue points" : "clues point"} to them`]);
+    const said = r.about.filter(x => x.text.trim()).map(x => `<li class="st-${x.stance}"><b>${esc(nameOf(person(x.from)))}:</b> ${esc(x.text.trim())}</li>`).join("");
+    const pct = p.cleared ? 0 : Math.max(0, Math.min(100, r.score / top * 100));
+    return `<div class="suspect${p.cleared ? " cleared" : ""}"><div class="s-top"><span class="rank">${p.cleared ? "–" : i+1}</span>` +
+      `<button class="s-name" data-goto="${p.id}">${esc(nameOf(p))}</button><span class="chip ${p.role}">${p.role === "suspect" ? "Suspect" : "Witness"}</span>` +
+      (p.cred ? `<span class="chip ${p.cred}">${credLabel(p.cred)}</span>` : "") + `</div>` +
+      `<div class="meter" title="How strongly the evidence points to them"><i style="width:${pct.toFixed(0)}%"></i></div>` +
+      `<div class="mom">${[["motive","Motive"],["opp","Opportunity"],["means","Means"]].map(([k,l]) => `<button class="mom-b${p[k] ? " on" : ""}" data-mom="${k}" data-id="${p.id}" aria-pressed="${p[k]}">${p[k] ? "✓ " : ""}${l}</button>`).join("")}</div>` +
+      `<div class="sus"><span>Suspicion</span>${[1,2,3,4,5].map(n => `<button class="pip${n <= p.sus ? " on" : ""}" data-sus="${n}" data-id="${p.id}" aria-label="Suspicion ${n} of 5"></button>`).join("")}` +
+      `<button class="link" data-act="clear" data-id="${p.id}">${p.cleared ? "Put back on the list" : "Mark as cleared"}</button></div>` +
+      `<dl class="claims"><dt>Says they were</dt><dd>${esc(p.where.trim()) || "Not recorded"}</dd><dt>Alibi</dt><dd>${esc(p.alibi.trim()) || "Not recorded"}</dd>` +
+      (p.rel.trim() ? `<dt>Relationship to ${esc(vic())}</dt><dd>${esc(p.rel.trim())}</dd>` : "") + `</dl>` +
+      (flags.length ? `<ul class="flags">${flags.map(([c,t]) => `<li class="${c}">${t}</li>`).join("")}</ul>` : "") +
+      (said ? `<ul class="said">${said}</ul>` : "") + `</div>`;
+  }).join("");
+
+  el.innerHTML = `<div class="block"><h3>What we know</h3>${summary}</div>` +
+    `<div class="block"><h3>Who looks guilty</h3><p class="hint">Ranked by motive, opportunity and means, your suspicion rating, credibility, contradictions, broken alibis and clues. Tap Motive, Opportunity or Means as you confirm them, and tap a name to open their interview.</p>` +
+    (cards || `<p class="empty">Your suspects will appear here once you add them.</p>`) + `</div>` +
+    `<div class="block map"><h3>Who said what about whom</h3>${mapSVG()}</div>`;
+
+  const chk = document.getElementById("accuse-check");
+  if (chk){
+    const who = person(state.accuse.who);
+    if (!who){ chk.innerHTML = list.length ? `<p class="hint">Your board currently points most strongly to ${esc(nameOf(list[0].p))}.</p>` : ""; }
+    else {
+      const r = analyze(who);
+      const items = [
+        [who.motive, "Has a motive"], [who.opp, "Had the opportunity"], [who.means, "Had the means"],
+        [!r.alibis.length || r.alibiBroken || !who.alibi.trim() || r.contra > 0, "Their story doesn’t hold up"],
+        [!who.cleared, "Not cleared"]
+      ];
+      const lead = list.find(x => !x.p.cleared);
+      chk.innerHTML = `<ul class="flags">${items.map(([ok,t]) => `<li class="${ok ? "good" : "bad"}">${t}</li>`).join("")}</ul>` +
+        (lead && lead.p.id !== who.id ? `<p class="hint">Note: your board ranks ${esc(nameOf(lead.p))} higher. Check the evidence once more.</p>` : "");
+    }
+  }
+}
+
+/* ---------- Section 4: Notebook ---------- */
+function renderNotebook(){
+  const clues = state.clues.map(c => `<div class="entry"><textarea data-path="clues.${c.id}.text" rows="2" placeholder="What you found or heard">${esc(c.text)}</textarea>` +
+    `<div class="entry-foot"><label class="field"><span>Points to</span>${personSelect(`clues.${c.id}.who`, "", "No one yet")}</label>` +
+    `<button class="link danger" data-act="delclue" data-cid="${c.id}">Remove</button></div></div>`).join("");
+  const times = state.timeline.map(t => `<div class="entry"><div class="time-row"><input type="text" data-path="timeline.${t.id}.time" value="${esc(t.time)}" placeholder="Time" autocomplete="off" aria-label="Time">` +
+    `<input type="text" data-path="timeline.${t.id}.event" value="${esc(t.event)}" placeholder="What happened, and who was there" autocomplete="off" aria-label="Event"></div>` +
+    `<div class="row-actions"><button class="link danger" data-act="deltime" data-tid="${t.id}">Remove</button></div></div>`).join("");
+  const body = `<div class="block"><h3>Clues <span class="count">${state.clues.length}</span></h3>` +
+    `<p class="hint">Link a clue to a person and it counts against them on the Solve board.</p>` +
+    `<div class="btn-row" style="margin-bottom:6px"><button class="btn small" data-act="addclue">Add a clue</button></div>${clues}</div>` +
+    `<div class="block"><h3>Timeline <span class="count">${state.timeline.length}</span></h3>` +
+    `<p class="hint">Gaps where no one can vouch for a suspect are opportunities. In Wonderland, check whose clock is wrong.</p>${times}` +
+    `<div class="btn-row"><button class="btn small" data-act="addtime">Add a moment</button></div></div>`;
+  return section("notebook", "Notebook", `${state.clues.length} clues, ${state.timeline.length} moments on the timeline`, body);
+}
+
+/* ---------- render & helpers ---------- */
+const app = document.getElementById("app");
+const sizing = typeof CSS !== "undefined" && CSS.supports && CSS.supports("field-sizing", "content");
+function grow(t){ if (sizing || !t.offsetParent) return; t.style.height = "auto"; t.style.height = (t.scrollHeight + 2) + "px"; }
+const growAll = root => { if (!sizing) root.querySelectorAll("textarea").forEach(grow); };
+function render(){
+  app.innerHTML = renderCase() + renderInterviews() + renderSolve() + renderNotebook();
+  renderBoard();
+  growAll(app);
+}
+let boardT;
+function scheduleBoard(){ clearTimeout(boardT); boardT = setTimeout(renderBoard, 300); }
+function refreshNames(){
+  document.querySelectorAll("[data-name-of]").forEach(el => { el.textContent = nameOf(person(el.dataset.nameOf)); });
+  document.querySelectorAll("select.person-select").forEach(sel => {
+    const v = sel.value; sel.innerHTML = personOptions(v, sel.dataset.exclude, sel.dataset.ph); sel.value = v;
+  });
+}
+function toast(msg){ const t = document.getElementById("toast"); t.textContent = msg; t.classList.add("show"); clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove("show"), 1800); }
+const reduced = () => window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+function openSection(key){ if (!state.open[key]){ state.open[key] = true; save(); render(); } }
+function scrollTo(el){ if (el) el.scrollIntoView({behavior: reduced() ? "auto" : "smooth", block:"start"}); }
+function focusIn(scopeSel, sel){
+  const scope = scopeSel ? document.querySelector(scopeSel) : document;
+  const el = scope && scope.querySelector(sel);
+  if (el){ el.focus({preventScroll:true}); el.scrollIntoView({block:"center", behavior: reduced() ? "auto" : "smooth"}); }
+}
+function scopeOf(el){
+  const c = el.closest(".card"); if (c) return "#" + c.id;
+  const s = el.closest(".sec"); return s ? "#" + s.id : "";
+}
+
+/* ---------- events ---------- */
+document.addEventListener("input", e => {
+  const el = e.target, path = el.dataset && el.dataset.path;
+  if (!path || el.type === "checkbox" || el.tagName === "SELECT") return;
+  setPath(path, el.value);
+  document.querySelectorAll(`[data-path="${path}"]`).forEach(o => { if (o !== el && o.tagName !== "SELECT") o.value = el.value; });
+  if (el.tagName === "TEXTAREA") grow(el);
+  if (/\.name$/.test(path)) refreshNames();
+  scheduleBoard(); save();
+});
+document.addEventListener("change", e => {
+  const el = e.target;
+  if (el.matches("select[data-pick]")){
+    const path = el.dataset.pick, scope = scopeOf(el);
+    if (el.value === "__other"){
+      otherOpen.add(path); setPath(path, ""); save(); render();
+      focusIn(scope, `input.other[data-path="${path}"]`);
+    } else { otherOpen.delete(path); setPath(path, el.value); save(); render(); }
+    return;
+  }
+  if (el.matches('input[type="checkbox"][data-path]')){ setPath(el.dataset.path, el.checked); save(); render(); return; }
+  if (el.matches("select[data-path]")){ setPath(el.dataset.path, el.value); save(); render(); }
+});
+document.addEventListener("click", e => {
+  const b = e.target.closest("button");
+  if (!b) return;
+  const d = b.dataset;
+  if (d.toggle){
+    const k = d.toggle; state.open[k] = !state.open[k];
+    b.setAttribute("aria-expanded", state.open[k]);
+    const body = b.nextElementSibling; body.hidden = !state.open[k];
+    if (state.open[k]){ if (k === "solve") renderBoard(); growAll(body); }
+    save(); return;
+  }
+  if (d.card){
+    const p = person(d.card); p.open = !p.open;
+    b.setAttribute("aria-expanded", p.open);
+    const body = b.nextElementSibling; body.hidden = !p.open;
+    if (p.open) growAll(body);
+    save(); return;
+  }
+  if (d.jump){ openSection(d.jump); scrollTo(document.getElementById("sec-" + d.jump)); return; }
+  if (d.goto){
+    const p = person(d.goto); p.open = true; state.open.interviews = true; save(); render();
+    scrollTo(document.getElementById("card-" + p.id)); return;
+  }
+  if (d.set){
+    const cur = getPath(d.set); setPath(d.set, cur === d.val ? "" : d.val); save(); render(); return;
+  }
+  if (d.mom){ const p = person(d.id); p[d.mom] = !p[d.mom]; save(); renderBoard(); return; }
+  if (d.sus){ const p = person(d.id), n = +d.sus; p.sus = p.sus === n ? n - 1 : n; save(); renderBoard(); return; }
+  const act = d.act;
+  if (!act) return;
+  if (act === "add"){
+    const p = newPerson(d.role); state.people.push(p); save(); render();
+    if (d.here){ scrollTo(document.getElementById("card-" + p.id)); }
+    else focusIn("#sec-case", `select[data-pick="people.${p.id}.name"]`);
+  } else if (act === "remove"){
+    const p = person(d.id);
+    if (!confirm(`Remove ${nameOf(p)} and everything recorded about them?`)) return;
+    state.people = state.people.filter(x => x.id !== d.id);
+    state.statements = state.statements.filter(s => s.from !== d.id && s.about !== d.id);
+    state.clues.forEach(c => { if (c.who === d.id) c.who = ""; });
+    if (state.accuse.who === d.id) state.accuse.who = "";
+    save(); render();
+  } else if (act === "swap"){
+    const p = person(d.id); p.role = p.role === "suspect" ? "witness" : "suspect"; save(); render();
+  } else if (act === "addq"){
+    const p = person(d.id), x = {id:uid(), q:d.q || "", a:""}; p.extra.push(x); save(); render();
+    focusIn("#card-" + p.id, d.q ? `[data-path="people.${p.id}.extra.${x.id}.a"]` : `[data-path="people.${p.id}.extra.${x.id}.q"]`);
+  } else if (act === "delq"){
+    const p = person(d.id); p.extra = p.extra.filter(x => x.id !== d.x); save(); render();
+  } else if (act === "addst"){
+    const s = {id:uid(), from: d.mode === "from" ? d.id : "", about: d.mode === "about" ? d.id : "", stance:"info", text:""};
+    state.statements.push(s); save(); render();
+    focusIn("#card-" + d.id, `select[data-path="statements.${s.id}.${d.mode === "about" ? "from" : "about"}"]`);
+  } else if (act === "delst"){
+    state.statements = state.statements.filter(s => s.id !== d.sid); save(); render();
+  } else if (act === "addclue"){
+    const c = {id:uid(), text:"", who:""}; state.clues.unshift(c); save(); render();
+    focusIn("#sec-notebook", `[data-path="clues.${c.id}.text"]`);
+  } else if (act === "delclue"){
+    state.clues = state.clues.filter(c => c.id !== d.cid); save(); render();
+  } else if (act === "addtime"){
+    const t = {id:uid(), time:"", event:""}; state.timeline.push(t); save(); render();
+    focusIn("#sec-notebook", `[data-path="timeline.${t.id}.time"]`);
+  } else if (act === "deltime"){
+    state.timeline = state.timeline.filter(t => t.id !== d.tid); save(); render();
+  } else if (act === "clear"){
+    const p = person(d.id); p.cleared = !p.cleared; save(); renderBoard();
+  } else if (act === "expandall" || act === "collapseall"){
+    state.people.forEach(p => p.open = act === "expandall"); save(); render();
+  } else if (act === "copy"){
+    copyNotes();
+  } else if (act === "reset"){
+    if (!confirm("Start a new case? This clears everything saved on this phone.")) return;
+    state = blank(); otherOpen.clear(); saveNow(); render(); scrollTo(document.body); toast("New case started");
+  }
+});
+
+function notesText(){
+  const L = [], s = state.scene, add = (label, v) => { if (v && String(v).trim()) L.push(`${label}: ${String(v).trim()}`); };
+  L.push("WICKED WONDERLAND: CASE NOTES", "");
+  add("Victim", state.victim.name); add("About the victim", state.victim.about);
+  add("Killed at", s.location); if (s.moved) add("Body found at", s.foundAt);
+  add("Weapon", s.weapon); if (s.misid) add("Real weapon", s.actualWeapon);
+  add("Time", s.time); add("Scene notes", s.notes);
+  state.people.forEach(p => {
+    L.push("", `${nameOf(p).toUpperCase()} (${p.role})`);
+    if (p.cred) L.push(`Credibility: ${credLabel(p.cred)}`);
+    const mom = [p.motive && "motive", p.opp && "opportunity", p.means && "means"].filter(Boolean);
+    if (mom.length) L.push(`Has: ${mom.join(", ")}`);
+    if (p.sus) L.push(`Suspicion: ${p.sus}/5${p.cleared ? " (cleared)" : ""}`);
+    add("Library area", p.station); add("What they do", p.job); add("Where they were", p.where); add("Alibi", p.alibi); add("Relationship to victim", p.rel);
+    questions().forEach((q,i) => { const a = p.answers["q"+i]; if (a && a.trim()) L.push(`Q: ${q}`, `A: ${a.trim()}`); });
+    p.extra.forEach(x => { if (x.a.trim() || x.q.trim()) L.push(`Q: ${x.q.trim()}`, `A: ${x.a.trim()}`); });
+    state.statements.filter(x => x.about === p.id && x.text.trim()).forEach(x => L.push(`${nameOf(person(x.from))} said (${STANCE.find(z => z[0] === x.stance)[1].toLowerCase()}): ${x.text.trim()}`));
+    add("Notes", p.notes);
+  });
+  const clues = state.clues.filter(c => c.text.trim());
+  if (clues.length){ L.push("", "CLUES"); clues.forEach(c => L.push(`- ${c.text.trim()}${c.who ? ` (points to ${nameOf(person(c.who))})` : ""}`)); }
+  const tl = state.timeline.filter(t => t.time.trim() || t.event.trim());
+  if (tl.length){ L.push("", "TIMELINE"); tl.forEach(t => L.push(`- ${t.time.trim()} ${t.event.trim()}`)); }
+  if (state.accuse.who || state.accuse.why.trim()){ L.push("", "ACCUSATION"); add("Murderer", state.accuse.who ? nameOf(person(state.accuse.who)) : ""); add("How and why", state.accuse.why); }
+  return L.join("\n");
+}
+function copyNotes(){
+  const text = notesText();
+  const fallback = () => {
+    const ta = document.createElement("textarea"); ta.value = text; ta.setAttribute("readonly", ""); ta.style.position = "fixed"; ta.style.opacity = "0";
+    document.body.appendChild(ta); ta.select(); ta.setSelectionRange(0, text.length);
+    let ok = false; try { ok = document.execCommand("copy"); } catch(e) {}
+    ta.remove(); toast(ok ? "Case notes copied" : "Copy didn’t work on this phone");
+  };
+  if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(() => toast("Case notes copied"), fallback);
+  else fallback();
+}
+
+render();
+
+if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+  window.addEventListener("load", () => { navigator.serviceWorker.register("service-worker.js").catch(() => {}); });
+}
+})();
+</script>
+</body>
+</html>

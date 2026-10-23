@@ -1,0 +1,14 @@
+{
+  "name": "Wicked Wonderland – Detective’s Casebook",
+  "short_name": "Wonderland",
+  "description": "Casebook for the Wicked Wonderland Mystery Night at the Roanoke County Public Library.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ECE2CB",
+  "theme_color": "#231B14",
+  "icons": [
+    {"src": "icon-192.png", "sizes": "192x192", "type": "image/png"},
+    {"src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable"}
+  ]
+}
